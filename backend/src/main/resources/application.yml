@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: straight-through-processing-backend
+  datasource:
+    url: jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres?currentSchema=public # <-- ADD THIS PART
+    username: postgres.mfnxqxvtoyngnajkrlsp
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
