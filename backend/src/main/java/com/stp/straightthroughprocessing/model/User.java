@@ -18,3 +18,4 @@ public class User {
     @Column(name = "balance")
     private Long balance;
 }
+
