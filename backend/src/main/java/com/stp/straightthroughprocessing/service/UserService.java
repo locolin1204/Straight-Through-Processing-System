@@ -15,4 +15,17 @@ public class UserService {
     public List<User> getAllUsers() {
         return userRepo.findAll();
     }
+
+    public User getUserById(Long userId){
+        return userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    public Long modifyCash(Long userId, Long amount){
+        User updatedUser = this.getUserById(userId);
+        updatedUser.setCash(
+                this.getUserById(userId).getCash() + amount
+        );
+        User res = userRepo.save(updatedUser);
+        return res.getCash();
+    }
 }
