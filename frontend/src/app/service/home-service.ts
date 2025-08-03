@@ -28,7 +28,7 @@ export async function callModifyBalanceApi(data: ModifyBalanceUser): Promise<num
     // Define the API endpoint URL.
     // In a real Next.js app, you'd typically store this in environment variables (e.g., process.env.NEXT_PUBLIC_API_URL)
     // or use a relative path if your Next.js app is served from the same domain as the Spring Boot backend.
-    const url = `${envUrl}/modify-balance`; // Adjust this URL to your Spring Boot server
+    const url = `${envUrl}/users/modify-balance`; // Adjust this URL to your Spring Boot server
 
     try {
         const response = await fetch(url, {
@@ -37,10 +37,7 @@ export async function callModifyBalanceApi(data: ModifyBalanceUser): Promise<num
                 'Content-Type': 'application/json', // Crucial header for JSON request bodies
             },
             // body: JSON.stringify(data), // Convert the JavaScript object to a JSON string
-            body: JSON.stringify({
-                'id': 2,
-                'amount': 3,
-            }), // Convert the JavaScript object to a JSON string
+            body: JSON.stringify(data), // Convert the JavaScript object to a JSON string
         });
 
         // Check if the response was successful (status code 2xx)

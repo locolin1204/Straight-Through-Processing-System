@@ -11,6 +11,7 @@ import {
     SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider,
 } from "@/components/ui/sidebar"
 import SideBar from "@/components/layout/side-bar";
+import { DateProvider } from "@/contexts/date-context";
 
 export const metadata: Metadata = {
     title: "STP Trade System",
@@ -31,12 +32,14 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
         >
+            <DateProvider>
             <SidebarProvider>
                 <SideBar />
                 <main className="h-screen w-full">
                     {children}
                 </main>
             </SidebarProvider>
+            </DateProvider>
         </ThemeProvider>
         </body>
         </html>

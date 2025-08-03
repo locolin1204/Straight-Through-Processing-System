@@ -35,14 +35,4 @@ public class UserController {
         return new ResponseEntity<>(updatedBalance, HttpStatus.OK);
     }
 
-
-//    @GetMapping(value = "/sse/messages", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-//    public Flux<String> streamMessages() {
-//        // Flux.interval generates a sequence of Long values at a fixed rate.
-//        // Here, it emits a value every 1 second.
-//        return Flux.interval(Duration.ofSeconds(1))
-//                // Map each emitted Long value to a custom String message.
-//                // The message includes the current index to show progression.
-//                .map(sequence -> "Message from server: " + sequence + " at " + java.time.LocalTime.now());
-//    }
 }
