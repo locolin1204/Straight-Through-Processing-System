@@ -1,3 +1,5 @@
+import { UTCTimestamp } from "lightweight-charts";
+
 export interface ModifyBalanceUser {
     id: number; // Using 'number' in TypeScript for Java's 'Long'
     amount: number;
@@ -33,4 +35,13 @@ export interface Candle {
 export interface Ticker {
     ticker: string;
     name: string;
+}
+
+export interface StockData {
+    timestamp: UTCTimestamp;
+    open: number;
+    high: number;
+    low: number;
+    close: number;
+    volume: number;
 }

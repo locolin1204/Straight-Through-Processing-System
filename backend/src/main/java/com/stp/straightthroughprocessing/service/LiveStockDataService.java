@@ -25,7 +25,7 @@ public class LiveStockDataService {
         return liveStockDataRepo.findByTickerAndTimestampBetween(
                 ticker,
                 startDate,
-                startDate.plusHours(2)
+                startDate.plusHours(5)
         );
     }
 
