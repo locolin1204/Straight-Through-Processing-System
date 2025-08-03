@@ -21,3 +21,16 @@ export type User = {
     name: string;
     cash: number;
 }
+
+export interface Candle {
+    time: number;
+    open: number;
+    high: number;
+    low: number;
+    close: number;
+}
+
+export interface Ticker {
+    ticker: string;
+    name: string;
+}

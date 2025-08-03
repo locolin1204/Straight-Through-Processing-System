@@ -1,3 +1,4 @@
+'use client'
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -100,7 +101,7 @@ export default function NewsCard() {
         'Neutral'
     ]
     return (
-        <Card className="mx-auto m-10 flex-1">
+        <Card className="flex-1 mr-10">
             <CardHeader>
                 <CardTitle>
                     <div className="flex flex-row gap-1">

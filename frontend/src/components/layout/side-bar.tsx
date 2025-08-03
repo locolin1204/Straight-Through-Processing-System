@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/sidebar";
 import { ChartCandlestick, Home, User } from "lucide-react";
 import Link from "next/link";
+import { DateTimePicker } from "@/components/layout/date-time-picker";
 
 export default function SideBar() {
     const navItems = [
@@ -32,6 +33,7 @@ export default function SideBar() {
     return (
         <Sidebar>
             <SidebarContent>
+                <div className="flex flex-col h-full justify-between mb-5">
                 <SidebarGroup>
                     <SidebarGroupLabel>Welcome back</SidebarGroupLabel>
                     <SidebarGroupContent>
@@ -49,6 +51,8 @@ export default function SideBar() {
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>
+                <DateTimePicker />
+                </div>
             </SidebarContent>
         </Sidebar>
     );
