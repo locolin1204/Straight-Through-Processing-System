@@ -1,30 +1,35 @@
 import React from 'react';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Label } from "@/components/ui/label";
-import { ArrowUpWideNarrow } from "lucide-react";
+import { StockTableProps } from "@/definition";
+import { getSignFromNumber } from "@/lib/utils";
 
-export default function StockTable() {
+export default function StockTable(
+    { stockTableProps }: {stockTableProps: StockTableProps},
+) {
     return (
         <div className="flex flex-col gap-5 w-full">
-            <Label className="flex flex-row text-green-300">
-                <ArrowUpWideNarrow/>
-                <p>Top Rising Stocks</p>
+            <Label className="flex flex-row ">
+                {stockTableProps.icon}
+                <p>{stockTableProps.tableName}</p>
             </Label>
             <Table>
-                <TableCaption>A list of your recent invoices.</TableCaption>
+                <TableCaption>{stockTableProps.desc}</TableCaption>
                 <TableHeader>
                     <TableRow>
                         <TableHead className="w-[100px]">Ticker</TableHead>
-                        <TableHead>Percentage</TableHead>
-                        <TableHead className="text-right">Price</TableHead>
+                        <TableHead className="">Price</TableHead>
+                        <TableHead className="text-right">Percentage</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    <TableRow>
-                        <TableCell className="font-medium">APPL</TableCell>
-                        <TableCell>+100%</TableCell>
-                        <TableCell className="text-right">$250.00</TableCell>
-                    </TableRow>
+                    {stockTableProps.tickers.map((ticker) => (
+                        <TableRow key={ticker.ticker}>
+                            <TableCell className="font-medium">{ticker.ticker}</TableCell>
+                            <TableCell className="">$ {ticker.curPrice.toLocaleString()}</TableCell>
+                            <TableCell className="text-right">{getSignFromNumber(ticker.percentage)}{ticker.percentage.toLocaleString()} %</TableCell>
+                        </TableRow>
+                    ))}
                 </TableBody>
             </Table>
         </div>

@@ -17,6 +17,7 @@ import { callModifyBalanceApi, getUserDetails } from "@/app/service/home-service
 import LoadingCircle from "@/components/loading-circle";
 import { ModifyBalanceUser } from "@/definition";
 import { clsx } from "clsx";
+import { Skeleton } from '../ui/skeleton';
 
 
 export default function PersonalInfoCard() {
@@ -91,7 +92,7 @@ export default function PersonalInfoCard() {
     }, [cash]);
 
     return (
-        <Card className="flex-1 ml-10">
+        <Card className="flex-1 ml-10 h-[50vh]" >
             {isLoading ? (
                 <LoadingCircle />
             ) : (
@@ -102,7 +103,7 @@ export default function PersonalInfoCard() {
                             Check your balance below
                         </CardDescription>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="flex flex-col justify-between h-full">
                         <div className="flex flex-col gap-5">
                             <div>
                                 <Label className="text-muted-foreground text-sm">Balance</Label>
@@ -133,7 +134,7 @@ export default function PersonalInfoCard() {
                                 </p>
                             </div>
                         </div>
-                        <div className="flex flex-col gap-2 pt-20">
+                        <div className="flex flex-col gap-2">
                             <div className="grid gap-2">
                                 <Label htmlFor="amount">Amount</Label>
                                 <Input

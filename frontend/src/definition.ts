@@ -18,18 +18,10 @@ export interface ApiErrorResponse {
     path?: string;
 }
 
-export type User = {
+export interface User {
     id: number;
     name: string;
     cash: number;
-}
-
-export interface Candle {
-    time: number;
-    open: number;
-    high: number;
-    low: number;
-    close: number;
 }
 
 export interface Ticker {
@@ -37,11 +29,59 @@ export interface Ticker {
     name: string;
 }
 
-export interface StockData {
+export interface LiveStockData {
     timestamp: UTCTimestamp;
     open: number;
     high: number;
     low: number;
     close: number;
     volume: number;
+    ticker: string;
+}
+
+export interface StockTableProps {
+    tableName: string;
+    desc: string;
+    icon: React.ReactNode;
+    tickers: StockTableTickerProps[];
+}
+
+export interface StockTableTickerProps {
+    ticker: string;
+    percentage: number;
+    curPrice: number;
+}
+
+export interface HistoricalData {
+    id: number;
+    ticker: string;
+    date: Date;
+    open: number;
+    high: number;
+    low: number;
+    close: number;
+    adjustedClose: number;
+    volume: number;
+    dividendAmount: number;
+    splitCoefficient: number;
+}
+
+export interface News {
+    id: number;
+    title: string;
+    timePublished: number;
+    topics: NewsTopic[];
+    tickerSentimentList: TickerSentiment[];
+}
+
+export interface TickerSentiment {
+    ticker: string;
+    relevanceScore: number
+    ticker_sentiment_label: string;
+    ticker_sentiment_score: number;
+}
+
+export interface NewsTopic {
+    topic: string;
+    relevance_score: number;
 }

@@ -39,15 +39,6 @@ export function DateTimePicker() {
     React.useEffect(() => {
         setIsMounted(true);
     }, []);
-    // const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     const [hours, minutes, seconds] = e.target.value.split(':').map(Number);
-    //
-    //     if (date && !isNaN(hours) && !isNaN(minutes) && !isNaN(seconds)) {
-    //         const newDate = new Date(date);
-    //         newDate.setHours(hours, minutes, seconds, 0); // Assuming milliseconds are 0
-    //         setDate(newDate);
-    //     }
-    // };
 
     const formatTime = (date: Date | null): string => {
         if (!date) return '';
@@ -94,7 +85,7 @@ export function DateTimePicker() {
                         </Label>
                         <div className="text-sm font-light">
                             <Badge variant="secondary">
-                                {date ? date.toLocaleDateString('en-GB') : "Select date"}
+                                {date ? date.toLocaleDateString('en-GB', { timeZone: 'UTC' }) : "Select date"}
                             </Badge>
                         </div>
                     </div>
@@ -104,6 +95,7 @@ export function DateTimePicker() {
                         selected={date}
                         captionLayout="dropdown"
                         locale={enGB}
+                        weekStartsOn={0}
                         onSelect={(date) => {
                             if (date) {
                                 handleDateChange(date)
@@ -147,9 +139,8 @@ export function DateTimePicker() {
                     type="time"
                     id="time-picker"
                     step="1"
-                    // defaultValue="10:30:00"
                     className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
-                    value={date?.toLocaleTimeString()}
+                    value={date?.toLocaleTimeString('en-GB', { timeZone: 'UTC' })}
                     onChange={handleTimeChange}
                 />
             </div>
