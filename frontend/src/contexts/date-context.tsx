@@ -3,16 +3,15 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 // --- 1. Date Context Setup ---
-// The DateContext provides the selected date and the function to set it.
 interface DateContextType {
-    date: Date | undefined;
-    setDate: (date: Date | undefined) => void;
+    userSelectedDate: Date | undefined;
+    setUserSelectedDate: (date: Date | undefined) => void;
+    currentTime: Date | undefined;
 }
 
 export const DateContext = createContext<DateContextType | undefined>(undefined);
 
-// A custom hook to use the DateContext.
-// Throws an error if used outside of the DateProvider.
+// Custom hook to use the DateContext
 export function useDateContext() {
     const context = useContext(DateContext);
     if (!context) {
@@ -22,27 +21,38 @@ export function useDateContext() {
 }
 
 export function DateProvider({ children }: { children: ReactNode }) {
-    const [date, setDate] = useState<Date | undefined>(undefined);
+    const [userSelectedDate, setUserSelectedDateState] = useState<Date | undefined>(undefined);
+    const [currentTime, setCurrentTime] = useState<Date | undefined>(undefined);
 
+    // Wrap setUserSelectedDate to also update currentTime synchronously
+    const setUserSelectedDate = (date: Date | undefined) => {
+        setUserSelectedDateState(date);
+        if (date) {
+            setCurrentTime(new Date(date));
+        }
+    };
 
+    // Initialize date and time
     useEffect(() => {
-        setDate(new Date('2025-08-05T13:00:00.000Z'));
-
-        // Set up interval to update date every second
-        // const timer = setInterval(() => {
-        //     setDate(prevDate => {
-        //         if (!prevDate) return new Date();
-        //         const newDate = new Date(prevDate);
-        //         newDate.setSeconds(newDate.getSeconds() + 1);
-        //         return newDate;
-        //     });
-        // }, 1000);
-        //
-        // // Cleanup interval on component unmount
-        // return () => clearInterval(timer);
+        const initialDate = new Date('2025-08-05T13:00:00.000Z');
+        setUserSelectedDateState(initialDate);
+        setCurrentTime(initialDate);
     }, []);
 
-    const value = { date, setDate };
+    // Timer to update currentTime every second
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentTime(prevTime => {
+                const newTime = prevTime ? new Date(prevTime) : new Date();
+                newTime.setMinutes(newTime.getMinutes() + 1);
+                return newTime;
+            });
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, []);
+
+    const value = { userSelectedDate, setUserSelectedDate, currentTime };
 
     return <DateContext.Provider value={value}>{children}</DateContext.Provider>;
 }

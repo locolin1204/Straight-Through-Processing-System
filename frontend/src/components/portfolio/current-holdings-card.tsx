@@ -43,7 +43,7 @@ export default function CurrentHoldingsCard() {
                             <TableHead className="">Ticker</TableHead>
                             <TableHead className="text-right">Unrealised Gain / Loss</TableHead>
                             <TableHead className="text-right">Quantity</TableHead>
-                            <TableHead className="text-right">Average Share Price</TableHead>
+                            <TableHead className="text-right">Average Buy Price</TableHead>
                             <TableHead className="text-right">Total Price</TableHead>
                             <TableHead className="text-left"></TableHead>
                         </TableRow>

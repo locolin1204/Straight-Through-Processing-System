@@ -18,6 +18,9 @@ public interface LiveStockDataRepository extends JpaRepository<LiveStockData, Lo
     List<LiveStockData> findByTimestampBetween(OffsetDateTime start, OffsetDateTime end);
     List<LiveStockData> findByTickerAndTimestampBetween(String ticker, OffsetDateTime start, OffsetDateTime end);
 
+    @QueryHints({@QueryHint(name = "org.hibernate.cacheable", value = "false")})
+    List<LiveStockData> findByTimestampBetweenOrderByTimestampAsc(OffsetDateTime start, OffsetDateTime end);
+
     @Query("SELECT h FROM LiveStockData h WHERE h.ticker = :ticker AND h.timestamp < :timestamp ORDER BY h.timestamp DESC LIMIT 1")
     LiveStockData findFirstByTickerAndDateLessThan(String ticker, OffsetDateTime timestamp);
 

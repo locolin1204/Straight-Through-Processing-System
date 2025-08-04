@@ -1,6 +1,5 @@
 package com.stp.straightthroughprocessing.controller;
 
-import com.stp.straightthroughprocessing.model.HistoricalData;
 import com.stp.straightthroughprocessing.model.LiveStockData;
 import com.stp.straightthroughprocessing.service.LiveStockDataService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/livestock")
@@ -30,9 +32,27 @@ public class LiveStockDataController {
     public Flux<LiveStockData> streamLiveStockByTicker(
             @PathVariable("ticker") String ticker, @PathVariable("offsetDateTime") OffsetDateTime offsetDateTime
     ) {
-        List<LiveStockData> data = liveStockDataService.getLiveStockDataByTickerAndDate(ticker, offsetDateTime);
+        List<LiveStockData> data = liveStockDataService.getLiveStockDataByTickerAndDateStream(ticker, offsetDateTime);
 
         return Flux.fromIterable(data)
+                .zipWith(Flux.interval(Duration.ofSeconds(1)))
+                .map(tuple -> tuple.getT1());
+    }
+
+    @GetMapping(value = "stream/all/{offsetDateTime}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<List<LiveStockData>> streamAllLiveStock(@PathVariable("offsetDateTime") OffsetDateTime offsetDateTime) {
+//        List<LiveStockData> data = liveStockDataService.getLiveStockDataByTickerAndDateStream(offsetDateTime);
+//        return Flux.fromIterable(data)
+//                .zipWith(Flux.interval(Duration.ofSeconds(1)))
+//                .map(tuple -> tuple.getT1());
+        List<LiveStockData> data = liveStockDataService.getAllLiveStockDataByDateStream(offsetDateTime);
+
+        Map<OffsetDateTime, List<LiveStockData>> groupedMap = data.stream()
+                .collect(Collectors.groupingBy(LiveStockData::getTimestamp, TreeMap::new, Collectors.toList()));
+
+        List<List<LiveStockData>> groupedData = new ArrayList<>(groupedMap.values());
+
+        return Flux.fromIterable(groupedData)
                 .zipWith(Flux.interval(Duration.ofSeconds(1)))
                 .map(tuple -> tuple.getT1());
     }
@@ -47,14 +67,6 @@ public class LiveStockDataController {
     public ResponseEntity<List<LiveStockData>> getAllLiveStock(@PathVariable("offsetDateTime") OffsetDateTime offsetDateTime) {
         return new ResponseEntity<>(liveStockDataService.getAllLiveStockDataByDate(offsetDateTime), HttpStatus.OK);
     }
-
-//    @GetMapping(value = "/all/{offsetDateTime}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-//    public Flux<List<LiveStockData>> streamAllLiveStock(@PathVariable("offsetDateTime") OffsetDateTime offsetDateTime) {
-//        List<LiveStockData> data = liveStockDataService.getLiveStockDataByTickerAndDate(offsetDateTime);
-//        return Flux.fromIterable(data)
-//                .zipWith(Flux.interval(Duration.ofSeconds(1)))
-//                .map(tuple -> tuple.getT1());
-//    }
 
     @GetMapping("/closest-previous/all/{offsetDateTime}")
     public ResponseEntity<List<LiveStockData>> getAllHistoricalData(@PathVariable("offsetDateTime") OffsetDateTime offsetDateTime) {

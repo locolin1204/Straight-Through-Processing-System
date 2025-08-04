@@ -11,7 +11,7 @@ import { calMarketPrice, calPercentageChange } from "@/lib/utils";
 import LoadingCircle from "@/components/loading-circle";
 
 export default function StocksCard() {
-    const { date } = useDateContext();
+    const { userSelectedDate, currentTime } = useDateContext()
 
     const [risingTableProps, setRisingTableProps] = useState<StockTableProps>();
     const [droppingTableProps, setDroppingTableProps] = useState<StockTableProps>();
@@ -19,12 +19,12 @@ export default function StocksCard() {
 
     useEffect(() => {
         setIsLoading(true);
-        if (!date) return;
+        if (!currentTime) return;
 
         const fetchAndProcessData = async () => {
             const [historicalData, liveData] = await Promise.all([
-                getAllClosestPreviousHistoricalData(date),
-                getCurrentLiveData(date),
+                getAllClosestPreviousHistoricalData(currentTime),
+                getCurrentLiveData(currentTime),
             ]);
 
             const processedList: StockTableTickerProps[] = historicalData.flatMap(historical => {
@@ -67,7 +67,7 @@ export default function StocksCard() {
         };
         setIsLoading(false);
         fetchAndProcessData();
-    }, [date]);
+    }, [userSelectedDate]);
 
     return (
         <Card className="mx-10 h-full">

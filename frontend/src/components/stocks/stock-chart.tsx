@@ -42,7 +42,8 @@ export default function StockChart({ selectedTicker }: { selectedTicker: Ticker 
     const [percentageChange, setPercentageChange] = useState(0);
     const [marketPrice, setMarketPrice] = useState(0);
     const [tradeQuantity, setTradeQuantity] = useState(1);
-    const { date } = useDateContext();
+    const { userSelectedDate, currentTime } = useDateContext()
+
     const envUserId = Number(process.env.NEXT_PUBLIC_USER_ID)
 
     const router = useRouter();
@@ -164,7 +165,7 @@ export default function StockChart({ selectedTicker }: { selectedTicker: Ticker 
         console.log("isloading = true:", isLoading)
 
         // Ensure all required dependencies are available
-        if (!date || !selectedTicker || !chartRef.current) {
+        if (!currentTime || !selectedTicker || !chartRef.current) {
             return;
         }
 
@@ -195,7 +196,7 @@ export default function StockChart({ selectedTicker }: { selectedTicker: Ticker 
             try {
                 console.log(`Fetching historical data for ${selectedTicker}`);
                 const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_BACKEND_HOST}/livestock/historical/${selectedTicker.ticker}/${date?.toISOString()}`,
+                    `${process.env.NEXT_PUBLIC_BACKEND_HOST}/livestock/historical/${selectedTicker.ticker}/${currentTime?.toISOString()}`,
                     { signal: abortController.signal }
                 );
 
@@ -229,7 +230,7 @@ export default function StockChart({ selectedTicker }: { selectedTicker: Ticker 
         const connectToLiveStream = () => {
             console.log(`Connecting to live stream for ${selectedTicker.ticker}`);
             const eventSource = new EventSource(
-                `${process.env.NEXT_PUBLIC_BACKEND_HOST}/livestock/stream/${selectedTicker.ticker}/${date?.toISOString()}`);
+                `${process.env.NEXT_PUBLIC_BACKEND_HOST}/livestock/stream/${selectedTicker.ticker}/${currentTime?.toISOString()}`);
             eventSourceRef.current = eventSource;
 
             eventSource.onopen = () => console.log("EventSource connection opened.");
@@ -263,7 +264,7 @@ export default function StockChart({ selectedTicker }: { selectedTicker: Ticker 
             };
         };
 
-        getClosestPreviousHistoricalData(selectedTicker, date).then((data) => {
+        getClosestPreviousHistoricalData(selectedTicker, currentTime).then((data) => {
             setPreviousDayPrice(data.close)
         });
         // Chain the operations: fetch historical data, then connect to live stream
@@ -283,7 +284,7 @@ export default function StockChart({ selectedTicker }: { selectedTicker: Ticker 
             }
         };
 
-    }, [selectedTicker, date]); // Re-run this effect when ticker or date changes
+    }, [selectedTicker, userSelectedDate]); // Re-run this effect when ticker or date changes
 
     const scrollToRealTime = () => {
         chartRef.current?.timeScale().scrollToRealTime();

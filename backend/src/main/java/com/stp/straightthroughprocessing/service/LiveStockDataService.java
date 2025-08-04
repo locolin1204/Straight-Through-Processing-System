@@ -23,12 +23,27 @@ public class LiveStockDataService {
     @Autowired
     private EntityManager entityManager;
 
-    public List<LiveStockData> getLiveStockDataByTickerAndDate(String ticker, OffsetDateTime startDate) {
+    public List<LiveStockData> getLiveStockDataByTickerAndDateStream(String ticker, OffsetDateTime startDate) {
         return liveStockDataRepo.findByTickerAndTimestampBetween(
                 ticker,
                 startDate,
                 startDate.plusHours(5)
         );
+    }
+
+    public List<LiveStockData> getAllLiveStockDataByDateStream(OffsetDateTime startDate) {
+        List<LiveStockData> allLiveStock = new ArrayList<>();
+
+        tickerService.getAllTickers().forEach(ticker -> {
+            List<LiveStockData> data = liveStockDataRepo.findByTickerAndTimestampBetween(
+                    ticker.getTicker(),
+                    startDate,
+                    startDate.plusHours(5)
+            );
+            allLiveStock.addAll(data);
+            entityManager.clear();
+        });
+        return allLiveStock;
     }
 
     public List<LiveStockData> getAllLiveStockDataByDate(OffsetDateTime startDate) {

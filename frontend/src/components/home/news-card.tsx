@@ -17,20 +17,19 @@ import { formatDate } from "@/lib/utils";
 export default function NewsCard() {
     const [isLoading, setIsLoading] = useState(true);
     const [news, setNews] = React.useState<News[]>([]);
-    const { date } = useDateContext()
-
+    const { userSelectedDate, currentTime } = useDateContext()
 
     useEffect(() => {
         setIsLoading(true);
-        if (!date) return;
+        if (!userSelectedDate || !currentTime) return;
         const fetchData = async () => {
-            const data = await getLatestNews(date);
+            const data = await getLatestNews(currentTime);
             console.log("news: ", data);
             setNews(data);
             setIsLoading(false);
         };
         fetchData();
-    }, [date]);
+    }, [userSelectedDate]);
 
     const tickerSentiment = [
         "Bullish",
@@ -89,6 +88,7 @@ export default function NewsCard() {
                                             <CardTitle>{item.title}</CardTitle>
                                             <CardDescription>
                                                 {formatDate(item.timePublished)}
+                                                <br/>
                                             </CardDescription>
                                         </CardHeader>
                                         <CardContent>
