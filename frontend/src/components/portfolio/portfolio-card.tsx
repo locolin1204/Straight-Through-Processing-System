@@ -1,7 +1,6 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CandlestickChartIcon, User } from "lucide-react";
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { User } from "lucide-react";
 import LabelNumber from "@/components/label-number";
 
 export default function PortfolioCard() {
@@ -19,10 +18,16 @@ export default function PortfolioCard() {
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <LabelNumber label="Unrealized P&L" formattedNumber="100" />
-                <LabelNumber label="Balance" formattedNumber="100" />
-                <LabelNumber label="Cash" formattedNumber="100" />
-
+                <div className="flex flex-row gap-20">
+                <div className="flex flex-col gap-3">
+                    <LabelNumber label="Balance" formattedNumber="100"/>
+                    <LabelNumber label="Cash" formattedNumber="100"/>
+                </div>
+                <div className="flex flex-col gap-3">
+                    <LabelNumber label="Realized P&L" formattedNumber="100"/>
+                    <LabelNumber label="Unrealized P&L" formattedNumber="100"/>
+                </div>
+                </div>
 
             </CardContent>
         </Card>

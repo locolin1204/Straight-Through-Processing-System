@@ -26,7 +26,7 @@ export function DateProvider({ children }: { children: ReactNode }) {
 
 
     useEffect(() => {
-        setDate(new Date('2025-08-04T13:00:00.000Z'));
+        setDate(new Date('2025-08-05T13:00:00.000Z'));
     }, []);
 
     const value = { date, setDate };

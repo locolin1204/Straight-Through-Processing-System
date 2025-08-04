@@ -2,14 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { inter } from "@/app/util/font";
 import { ThemeProvider } from "@/components/theme-provider";
-import {
-    Sidebar,
-    SidebarContent,
-    SidebarFooter,
-    SidebarGroup, SidebarGroupContent,
-    SidebarGroupLabel,
-    SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider,
-} from "@/components/ui/sidebar"
+import { SidebarProvider, } from "@/components/ui/sidebar"
 import SideBar from "@/components/layout/side-bar";
 import { DateProvider } from "@/contexts/date-context";
 

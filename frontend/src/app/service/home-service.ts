@@ -1,4 +1,4 @@
-import { ApiErrorResponse, ModifyBalanceUser, User } from "@/definition";
+import { ApiErrorResponse, HistoricalData, ModifyBalanceUser, News, LiveStockData, User } from "@/definition";
 
 
 /**
@@ -66,4 +66,46 @@ export async function callModifyBalanceApi(data: ModifyBalanceUser): Promise<num
             throw new Error('An unknown error occurred during API call.');
         }
     }
+}
+
+export async function getAllClosestPreviousHistoricalData(date: Date): Promise<Array<HistoricalData>> {
+    const url = `${envUrl}/historical-data/closest-previous/all/${date?.toISOString().split('T')[0]}`; // Adjust this URL to your Spring Boot server
+    const response = await fetch(url, {
+        method: 'GET', // Specify the HTTP method as POST
+        headers: {
+            'Content-Type': 'application/json', // Crucial header for JSON request bodies
+        },
+    });
+    if (response.ok) {
+        return await response.json();
+    }
+    throw new Error('Cannot retrieve historical data.');
+}
+
+export async function getCurrentLiveData(date: Date): Promise<Array<LiveStockData>> {
+    const url = `${envUrl}/livestock/all/${date?.toISOString()}`; // Adjust this URL to your Spring Boot server
+    const response = await fetch(url, {
+        method: 'GET', // Specify the HTTP method as POST
+        headers: {
+            'Content-Type': 'application/json', // Crucial header for JSON request bodies
+        },
+    });
+    if (response.ok) {
+        return await response.json();
+    }
+    throw new Error('Cannot retrieve current live data.');
+}
+
+export async function getLatestNews(date: Date): Promise<Array<News>> {
+    const url = `${envUrl}/news/${date?.toISOString()}`;
+    const response = await fetch(url, {
+        method: 'GET', // Specify the HTTP method as POST
+        headers: {
+            'Content-Type': 'application/json', // Crucial header for JSON request bodies
+        },
+    });
+    if (response.ok) {
+        return await response.json();
+    }
+    throw new Error('Cannot retrieve news data.');
 }
