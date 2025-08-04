@@ -12,6 +12,7 @@ import { getLatestNews } from "@/app/service/home-service";
 import { News } from "@/definition";
 import LoadingCircle from "@/components/loading-circle";
 import { format, subHours } from "date-fns";
+import { formatDate } from "@/lib/utils";
 
 export default function NewsCard() {
     const [isLoading, setIsLoading] = useState(true);
@@ -87,7 +88,7 @@ export default function NewsCard() {
                                             </div>
                                             <CardTitle>{item.title}</CardTitle>
                                             <CardDescription>
-                                                {format(subHours(item.timePublished * 1000, 8), 'dd MMM yyyy HH:mm')}
+                                                {formatDate(item.timePublished)}
                                             </CardDescription>
                                         </CardHeader>
                                         <CardContent>

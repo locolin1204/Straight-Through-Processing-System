@@ -1,5 +1,6 @@
 package com.stp.straightthroughprocessing.controller;
 
+import com.stp.straightthroughprocessing.model.HistoricalData;
 import com.stp.straightthroughprocessing.model.LiveStockData;
 import com.stp.straightthroughprocessing.service.LiveStockDataService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -47,12 +49,23 @@ public class LiveStockDataController {
     }
 
 //    @GetMapping(value = "/all/{offsetDateTime}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-//    public Flux<LiveStockData> getAllLiveStock(@PathVariable("offsetDateTime") OffsetDateTime offsetDateTime) {
+//    public Flux<List<LiveStockData>> streamAllLiveStock(@PathVariable("offsetDateTime") OffsetDateTime offsetDateTime) {
 //        List<LiveStockData> data = liveStockDataService.getLiveStockDataByTickerAndDate(offsetDateTime);
 //        return Flux.fromIterable(data)
 //                .zipWith(Flux.interval(Duration.ofSeconds(1)))
 //                .map(tuple -> tuple.getT1());
 //    }
 
+    @GetMapping("/closest-previous/all/{offsetDateTime}")
+    public ResponseEntity<List<LiveStockData>> getAllHistoricalData(@PathVariable("offsetDateTime") OffsetDateTime offsetDateTime) {
+        List<LiveStockData> liveDataList = liveStockDataService.getAllLiveDataFromNearestPreviousDate(offsetDateTime);
+        return new ResponseEntity<>(liveDataList, HttpStatus.OK);
+    }
+
+    @GetMapping("/closest-previous/{ticker}/{offsetDateTime}")
+    public ResponseEntity<LiveStockData> getAllHistoricalData(@PathVariable("ticker") String ticker,  @PathVariable("offsetDateTime") OffsetDateTime offsetDateTime) {
+        LiveStockData liveData = liveStockDataService.getLiveDataByTickerFromNearestPreviousDate(ticker, offsetDateTime);
+        return new ResponseEntity<>(liveData, HttpStatus.OK);
+    }
 
 }

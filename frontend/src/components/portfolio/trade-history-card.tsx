@@ -1,9 +1,28 @@
-import React from 'react';
+'use client'
+
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { History } from "lucide-react";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { TradeRecord } from "@/definition";
+import { getCurrentHoldings, getTradeHistory } from "@/app/service/portfolio-service";
+import { capitalizeFirstLetter, formatDate, formatNumber } from "@/lib/utils";
 
 export default function TradeHistoryCard() {
+    const envUserId = Number(process.env.NEXT_PUBLIC_USER_ID)
+
+    const [isLoading, setIsLoading] = useState(true);
+    const [tradeHistory, setTradeHistory] = useState<Array<TradeRecord>>([])
+
+    useEffect(() => {
+        setIsLoading(true);
+        (async () => {
+            const data = await getTradeHistory(envUserId);
+            setTradeHistory(data.sort((a, b) => b.tradeTimestamp - a.tradeTimestamp));
+            setIsLoading(false);
+        })()
+
+    }, []);
 
     const rows = [
         {}
@@ -33,15 +52,17 @@ export default function TradeHistoryCard() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        <TableRow>
-                            <TableCell>2025 Aug 1</TableCell>
-                            <TableCell>AAPL</TableCell>
-                            <TableCell className="text-right"> -100</TableCell>
-                            <TableCell className="text-right">Buy</TableCell>
-                            <TableCell className="text-right">15</TableCell>
-                            <TableCell className="text-right">$ 249.10</TableCell>
-                            <TableCell className="text-right">$ 2350.00</TableCell>
-                        </TableRow>
+                        {tradeHistory.map((trade) => (
+                            <TableRow key={trade.id}>
+                                <TableCell>{formatDate(trade.tradeTimestamp)}</TableCell>
+                                <TableCell>{trade.ticker}</TableCell>
+                                <TableCell className="text-right">{trade.pnl}</TableCell>
+                                <TableCell className="text-right">{capitalizeFirstLetter(trade.tradeType)}</TableCell>
+                                <TableCell className="text-right">{trade.quantity}</TableCell>
+                                <TableCell className="text-right">$ {formatNumber(trade.pricePerShare)}</TableCell>
+                                <TableCell className="text-right">$ {formatNumber(trade.pricePerShare*trade.quantity)}</TableCell>
+                            </TableRow>
+                        ))}
                     </TableBody>
                     <TableCaption>A list of your recent transactions.</TableCaption>
                 </Table>

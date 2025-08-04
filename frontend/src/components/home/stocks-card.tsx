@@ -32,7 +32,7 @@ export default function StocksCard() {
                 if (!match) return [];
 
                 const marketPrice = calMarketPrice(match.high, match.low, match.close);
-                const percentageChange = calPercentageChange(marketPrice, historical.adjustedClose);
+                const percentageChange = calPercentageChange(marketPrice, historical.close);
 
                 return [{
                     ticker: historical.ticker,

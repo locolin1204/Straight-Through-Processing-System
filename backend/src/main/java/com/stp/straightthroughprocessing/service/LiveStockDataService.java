@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -23,7 +23,7 @@ public class LiveStockDataService {
     @Autowired
     private EntityManager entityManager;
 
-    public List<LiveStockData> getLiveStockDataByTickerAndDate(String ticker, OffsetDateTime startDate){
+    public List<LiveStockData> getLiveStockDataByTickerAndDate(String ticker, OffsetDateTime startDate) {
         return liveStockDataRepo.findByTickerAndTimestampBetween(
                 ticker,
                 startDate,
@@ -31,7 +31,7 @@ public class LiveStockDataService {
         );
     }
 
-    public List<LiveStockData> getAllLiveStockDataByDate(OffsetDateTime startDate){
+    public List<LiveStockData> getAllLiveStockDataByDate(OffsetDateTime startDate) {
         System.out.println("Fetching all live stock data for date: " + startDate);
         List<LiveStockData> allLiveStock = new ArrayList<>();
         List<Ticker> tickers = tickerService.getAllTickers();
@@ -44,6 +44,16 @@ public class LiveStockDataService {
         });
 
         return allLiveStock;
+    }
+
+    public LiveStockData getLiveDataByTickerFromNearestPreviousDate(String ticker, OffsetDateTime offsetDateTime) {
+        System.out.println("offsetDateTime.truncatedTo(ChronoUnit.DAYS)" + offsetDateTime.truncatedTo(ChronoUnit.DAYS));
+        return liveStockDataRepo.findFirstByTickerAndDateLessThan(ticker, offsetDateTime);
+    }
+
+    public List<LiveStockData> getAllLiveDataFromNearestPreviousDate(OffsetDateTime offsetDateTime) {
+        System.out.println("offsetDateTime.truncatedTo(ChronoUnit.DAYS)" + offsetDateTime.truncatedTo(ChronoUnit.DAYS));
+        return this.getAllLiveStockDataByDate(offsetDateTime.truncatedTo(ChronoUnit.DAYS));
     }
 
 

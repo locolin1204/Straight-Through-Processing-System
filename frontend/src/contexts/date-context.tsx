@@ -27,6 +27,19 @@ export function DateProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         setDate(new Date('2025-08-05T13:00:00.000Z'));
+
+        // Set up interval to update date every second
+        // const timer = setInterval(() => {
+        //     setDate(prevDate => {
+        //         if (!prevDate) return new Date();
+        //         const newDate = new Date(prevDate);
+        //         newDate.setSeconds(newDate.getSeconds() + 1);
+        //         return newDate;
+        //     });
+        // }, 1000);
+        //
+        // // Cleanup interval on component unmount
+        // return () => clearInterval(timer);
     }, []);
 
     const value = { date, setDate };

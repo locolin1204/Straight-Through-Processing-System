@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { SidebarProvider, } from "@/components/ui/sidebar"
 import SideBar from "@/components/layout/side-bar";
 import { DateProvider } from "@/contexts/date-context";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
     title: "STP Trade System",
@@ -31,6 +32,7 @@ export default function RootLayout({
                 <main className="h-screen w-full">
                     {children}
                 </main>
+                <Toaster richColors />
             </SidebarProvider>
             </DateProvider>
         </ThemeProvider>

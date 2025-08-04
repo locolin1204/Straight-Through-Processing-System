@@ -68,8 +68,8 @@ export async function callModifyBalanceApi(data: ModifyBalanceUser): Promise<num
     }
 }
 
-export async function getAllClosestPreviousHistoricalData(date: Date): Promise<Array<HistoricalData>> {
-    const url = `${envUrl}/historical-data/closest-previous/all/${date?.toISOString().split('T')[0]}`; // Adjust this URL to your Spring Boot server
+export async function getAllClosestPreviousHistoricalData(date: Date): Promise<Array<LiveStockData>> {
+    const url = `${envUrl}/livestock/closest-previous/all/${date?.toISOString()}`; // Adjust this URL to your Spring Boot server
     const response = await fetch(url, {
         method: 'GET', // Specify the HTTP method as POST
         headers: {

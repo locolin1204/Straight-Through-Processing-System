@@ -1,10 +1,31 @@
-import React from 'react';
+'use client'
+
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartCandlestick, History } from "lucide-react";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { getUserDetails } from "@/app/service/home-service";
+import { getCurrentHoldings } from "@/app/service/portfolio-service";
+import { TradeRecord } from "@/definition";
+import { formatNumber } from "@/lib/utils";
 
 export default function CurrentHoldingsCard() {
+    const envUserId = Number(process.env.NEXT_PUBLIC_USER_ID)
+
+    const [isLoading, setIsLoading] = useState(true);
+    const [curHoldings, setCurHoldings] = useState<Array<TradeRecord>>([])
+
+    useEffect(() => {
+        setIsLoading(true);
+        (async () => {
+            const data = await getCurrentHoldings(envUserId);
+            setCurHoldings(data);
+            setIsLoading(false);
+        })()
+
+    }, []);
+
     return (
         <Card className="mx-10 h-full">
             <CardHeader>
@@ -28,16 +49,20 @@ export default function CurrentHoldingsCard() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        <TableRow>
-                            <TableCell>AAPL</TableCell>
-                            <TableCell className="text-right"> -100</TableCell>
-                            <TableCell className="text-right">15</TableCell>
-                            <TableCell className="text-right">$ 249.10</TableCell>
-                            <TableCell className="text-right">$ 2350.00</TableCell>
-                            <TableCell className="text-center w-24">
-                                <Button variant="outline" className="cursor-pointer w-full">Sell</Button>
-                            </TableCell>
-                        </TableRow>
+                        {
+                            curHoldings.map((holding)=> (
+                                <TableRow key={holding.id}>
+                                    <TableCell>{holding.ticker}</TableCell>
+                                    <TableCell className="text-right">//</TableCell>
+                                    <TableCell className="text-right">{holding.quantity}</TableCell>
+                                    <TableCell className="text-right">$ {formatNumber(holding.pricePerShare)}</TableCell>
+                                    <TableCell className="text-right">$ {formatNumber(holding.pricePerShare*holding.quantity)}</TableCell>
+                                    <TableCell className="text-center w-24">
+                                        <Button variant="outline" className="cursor-pointer w-full">Sell</Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        }
                     </TableBody>
                     <TableCaption>A list of you current holdings.</TableCaption>
                 </Table>
