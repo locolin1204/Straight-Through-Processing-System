@@ -1,6 +1,7 @@
 package com.stp.straightthroughprocessing.repository;
 
 import com.stp.straightthroughprocessing.model.TradeRecord;
+import com.stp.straightthroughprocessing.model.request.CurrentHoldings;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,10 +14,26 @@ import java.util.List;
 public interface TradeRecordRepository extends JpaRepository<TradeRecord, Long> {
     List<TradeRecord> findByUserId(Long userId);
 
-    @Query("SELECT t1 FROM TradeRecord t1 WHERE t1.tradeType = 'sell' AND t1.userId = 2 AND EXISTS (SELECT 1 FROM TradeRecord t2 WHERE t2.tradeType = 'buy' AND t2.holdingId = t1.holdingId) ORDER by t1.tradeTimestamp DESC")
+    @Query("SELECT new com.stp.straightthroughprocessing.model.request.CurrentHoldings(" +
+            "t1.userId, t1.ticker, SUM(t1.quantity), " +
+            "CASE WHEN SUM(t1.quantity) = 0 THEN 0 ELSE SUM(t1.pricePerShare * t1.quantity) / CAST(SUM(t1.quantity) AS DOUBLE) END) " +
+            "FROM TradeRecord t1 " +
+            "WHERE t1.tradeType = 'buy' " +
+            "AND t1.userId = :userId " +
+            "AND NOT EXISTS (" +
+            "    SELECT t2.id " +
+            "    FROM TradeRecord t2 " +
+            "    WHERE t2.tradeType = 'sell' " +
+            "    AND t2.holdingId = t1.holdingId" +
+            ") " +
+            "GROUP BY t1.ticker, t1.userId")
+    List<CurrentHoldings> findCurrentHoldingsByUserId(@Param("userId") Long userId);
+
+
+    @Query("SELECT t1 FROM TradeRecord t1 WHERE t1.tradeType = 'sell' AND t1.userId = :userId AND EXISTS (SELECT 1 FROM TradeRecord t2 WHERE t2.tradeType = 'buy' AND t2.holdingId = t1.holdingId) ORDER by t1.tradeTimestamp DESC")
     List<TradeRecord> findSellTradesWithMatchingBuyTrade(@PathVariable Long userId);
 
-    @Query("SELECT t1 FROM TradeRecord t1 WHERE t1.tradeType = 'buy' AND t1.userId = 2 AND NOT EXISTS (SELECT 1 FROM TradeRecord t2 WHERE t2.tradeType = 'sell' AND t2.holdingId = t1.holdingId) ORDER by t1.tradeTimestamp DESC")
+    @Query("SELECT t1 FROM TradeRecord t1 WHERE t1.tradeType = 'buy' AND t1.userId = :userId AND NOT EXISTS (SELECT 1 FROM TradeRecord t2 WHERE t2.tradeType = 'sell' AND t2.holdingId = t1.holdingId) ORDER by t1.tradeTimestamp DESC")
     List<TradeRecord> findHoldingTradesWithMatchingBuyTrade(@PathVariable Long userId);
 
     @Query("SELECT MAX(t.holdingId) FROM TradeRecord t WHERE t.userId = :userId")

@@ -98,6 +98,13 @@ export interface TradeRecord {
     tradeTimestamp: number;
 }
 
+export interface CurrentHolding {
+    ticker: string;
+    averagePrice: number;
+    quantity: number;
+    userId: number;
+}
+
 export interface TradeRecordBody {
     userId: number;
     ticker: string;
@@ -105,5 +112,11 @@ export interface TradeRecordBody {
     tradeType: string;
     pricePerShare: number;
     tradeTimestamp: number;
+}
+
+export interface SellTradeRequest {
+    ticker: string;
+    userId: number;
+    marketPrice: number;
 }
 

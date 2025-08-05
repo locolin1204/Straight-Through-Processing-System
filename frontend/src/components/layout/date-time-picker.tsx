@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label"
 import { useDateContext } from "@/contexts/date-context"
 import { enGB } from "date-fns/locale"
 import { Badge } from "@/components/ui/badge"
+import { formatDate } from "@/lib/utils";
+import { format, subHours } from "date-fns";
 
 export function DateTimePicker() {
     const { currentTime, userSelectedDate, setUserSelectedDate } = useDateContext()
@@ -22,6 +24,11 @@ export function DateTimePicker() {
         const minutes = date.getUTCMinutes().toString().padStart(2, '0')
         const seconds = date.getUTCSeconds().toString().padStart(2, '0')
         return `${hours}:${minutes}:${seconds}`
+    }
+
+    function formatCurrentTime (date: number | undefined) {
+        if (!date) return ''
+        return format(subHours(date, 8), 'dd MMM yyyy HH:mm')
     }
 
     const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,7 +71,7 @@ export function DateTimePicker() {
 
     return (
         <div className="flex flex-col gap-4 mx-4 pb-20">
-            {currentTime?.toISOString()}
+            <Badge variant="outline" className="w-full text-base">{formatCurrentTime(currentTime?.getTime())}</Badge>
             <div className="flex flex-col gap-2">
                 <div className="mx-1 flex flex-row justify-between items-center">
                     <Label htmlFor="date-picker" className="px-1">

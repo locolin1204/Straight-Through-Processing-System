@@ -29,8 +29,8 @@ public class UserController {
 
     @PostMapping("/modify-balance")
     @ResponseBody
-    public ResponseEntity<Long> updateCash(@RequestBody ModifyBalanceUser modifyBalanceUser) {
-        Long updatedBalance = this.userService.modifyCash(modifyBalanceUser.id, modifyBalanceUser.amount);
+    public ResponseEntity<Double> updateCash(@RequestBody ModifyBalanceUser modifyBalanceUser) {
+        Double updatedBalance = this.userService.modifyCash(modifyBalanceUser.id, modifyBalanceUser.amount);
         return new ResponseEntity<>(updatedBalance, HttpStatus.OK);
     }
 

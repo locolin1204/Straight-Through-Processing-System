@@ -1,6 +1,8 @@
 package com.stp.straightthroughprocessing.controller;
 
 import com.stp.straightthroughprocessing.model.TradeRecord;
+import com.stp.straightthroughprocessing.model.request.CurrentHoldings;
+import com.stp.straightthroughprocessing.model.request.SellTradeRequest;
 import com.stp.straightthroughprocessing.repository.TradeRecordRepository;
 import com.stp.straightthroughprocessing.service.TradeRecordService;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -40,8 +42,8 @@ public class TradeRecordController {
     }
 
     @GetMapping("/holdings/{userId}")
-    public ResponseEntity<List<TradeRecord>> getHoldingsTradesByUserId(@PathVariable Long userId) {
-        List<TradeRecord> trades = tradeRecordService.getCurrentHoldingsByUserId(userId);
+    public ResponseEntity<List<CurrentHoldings>> getHoldingsTradesByUserId(@PathVariable Long userId) {
+        List<CurrentHoldings> trades = tradeRecordService.getTradesByUserIdWithAverage(userId);
         return new ResponseEntity<>(trades, HttpStatus.OK);
     }
 
@@ -50,5 +52,12 @@ public class TradeRecordController {
     public ResponseEntity<TradeRecord> createTradeRecord(@RequestBody TradeRecord tradeRecord) {
         TradeRecord createdTradeRecord = tradeRecordService.createTradeRecord(tradeRecord);
         return new ResponseEntity<>(createdTradeRecord, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/sell")
+    @ResponseBody
+    public ResponseEntity<List<TradeRecord>> sellTradeRecord(@RequestBody SellTradeRequest sellTradeRequest) {
+        List<TradeRecord> soldTrades = tradeRecordService.sellTrades(sellTradeRequest);
+        return new ResponseEntity<>(soldTrades, HttpStatus.CREATED);
     }
 }
