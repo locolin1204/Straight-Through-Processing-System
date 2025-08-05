@@ -1,17 +1,9 @@
-import {
-    ApiErrorResponse,
-    HistoricalData, LiveStockData,
-    ModifyBalanceUser,
-    Ticker,
-    TradeRecord,
-    TradeRecordBody
-} from "@/definition";
+import { ApiErrorResponse, CurrentHolding, News, SellTradeRequest, TradeRecord, TradeRecordBody } from "@/definition";
 
 const envUrl = process.env.NEXT_PUBLIC_BACKEND_HOST
 
-
-export async function getAllTickers(): Promise<Array<Ticker>> {
-    const url = `${envUrl}/ticker/all`; // Adjust this URL to your Spring Boot server
+export async function getCurrentHoldings(userId: number): Promise<Array<CurrentHolding>> {
+    const url = `${envUrl}/trade-record/holdings/${userId}`;
     const response = await fetch(url, {
         method: 'GET', // Specify the HTTP method as POST
         headers: {
@@ -21,11 +13,11 @@ export async function getAllTickers(): Promise<Array<Ticker>> {
     if (response.ok) {
         return await response.json();
     }
-    throw new Error('Cannot retrieve ticker.');
+    throw new Error('Cannot retrieve news data.');
 }
 
-export async function getClosestPreviousHistoricalData(ticker: Ticker, date: Date): Promise<LiveStockData> {
-    const url = `${envUrl}/livestock/closest-previous/${ticker.ticker}/${date?.toISOString()}`; // Adjust this URL to your Spring Boot server
+export async function getTradeHistory(userId: number): Promise<Array<TradeRecord>> {
+    const url = `${envUrl}/trade-record/all/${userId}`;
     const response = await fetch(url, {
         method: 'GET', // Specify the HTTP method as POST
         headers: {
@@ -35,14 +27,15 @@ export async function getClosestPreviousHistoricalData(ticker: Ticker, date: Dat
     if (response.ok) {
         return await response.json();
     }
-    throw new Error('Cannot retrieve historical data.');
+    throw new Error('Cannot retrieve news data.');
 }
 
-export async function createTrade(tradeRecord: TradeRecordBody): Promise<TradeRecord> {
+
+export async function sellTrade(sellTradeRequest: SellTradeRequest): Promise<Array<TradeRecord>> {
     // Define the API endpoint URL.
     // In a real Next.js app, you'd typically store this in environment variables (e.g., process.env.NEXT_PUBLIC_API_URL)
     // or use a relative path if your Next.js app is served from the same domain as the Spring Boot backend.
-    const url = `${envUrl}/trade-record/create`; // Adjust this URL to your Spring Boot server
+    const url = `${envUrl}/trade-record/sell`; // Adjust this URL to your Spring Boot server
 
     try {
         const response = await fetch(url, {
@@ -50,7 +43,7 @@ export async function createTrade(tradeRecord: TradeRecordBody): Promise<TradeRe
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(tradeRecord),
+            body: JSON.stringify(sellTradeRequest),
         });
 
         if (response.ok) {

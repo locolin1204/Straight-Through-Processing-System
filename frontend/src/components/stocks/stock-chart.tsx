@@ -9,7 +9,6 @@ import {
     HistogramSeries,
     IChartApi,
     ISeriesApi,
-    UTCTimestamp,
 } from 'lightweight-charts';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from "@/components/ui/button";
@@ -17,12 +16,14 @@ import { Label } from "@/components/ui/label";
 import LabelNumber from "@/components/label-number";
 import { Input } from "@/components/ui/input";
 import { useDateContext } from "@/contexts/date-context";
-import { LiveStockData, Ticker } from "@/definition";
+import { LiveStockData, Ticker, TradeRecordBody } from "@/definition";
 import LoadingCircle from "@/components/loading-circle";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getClosestPreviousHistoricalData } from "@/app/service/stock-service";
-import { calMarketPrice, calPercentageChange, getSignFromNumber, isPositive } from "@/lib/utils";
+import { createTrade, getClosestPreviousHistoricalData } from "@/app/service/stock-service";
+import { calMarketPrice, calPercentageChange, formatNumber, getSignFromNumber, isPositive } from "@/lib/utils";
 import { clsx } from "clsx";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 // Define a type for your data structure for clarity
 
@@ -36,10 +37,16 @@ export default function StockChart({ selectedTicker }: { selectedTicker: Ticker 
     const eventSourceRef = useRef<EventSource | null>(null);
     const abortControllerRef = useRef<AbortController | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [isBuyingTrade, setIsBuyingTrade] = useState(false);
     const [previousDayPrice, setPreviousDayPrice] = useState(0);
     const [percentageChange, setPercentageChange] = useState(0);
     const [marketPrice, setMarketPrice] = useState(0);
-    const { date } = useDateContext();
+    const [tradeQuantity, setTradeQuantity] = useState(1);
+    const { userSelectedDate, currentTime } = useDateContext()
+
+    const envUserId = Number(process.env.NEXT_PUBLIC_USER_ID)
+
+    const router = useRouter();
 
     const chartHeight = 600
 
@@ -48,8 +55,45 @@ export default function StockChart({ selectedTicker }: { selectedTicker: Ticker 
         high: 0,
         low: 0,
         close: 0,
-        volume: 0,
+        time: 0,
+        volume: 0
     });
+
+    const handleTradeQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setTradeQuantity(Number(e.target.value));
+    };
+
+    const handleBuyTrade = async (e: React.FormEvent) => {
+        setIsBuyingTrade(true);
+        e.preventDefault();
+
+        const trade: TradeRecordBody = {
+            userId: envUserId,
+            ticker: selectedTicker.ticker,
+            quantity: tradeQuantity ,
+            tradeType: "buy",
+            pricePerShare: marketPrice,
+            tradeTimestamp: details.time
+        };
+
+        try {
+            console.log("BuyTrade", trade);
+            const tradeRes = await createTrade(trade);
+            toast.success("Trade Executed", {
+                description: `Bought $ ${tradeRes.quantity} ${tradeRes.ticker} shares at ${formatNumber(tradeRes.pricePerShare)}`,
+                // action: {
+                //     label: "Check out portfolio",
+                //     onClick: () => router.push('/portfolio'),
+                // },
+            })
+            // console.log("Finish buy trade", tradeRes);
+            setIsBuyingTrade(false);
+        } catch (error) {
+            setIsBuyingTrade(false);
+            console.error("Withdrawal failed:", error);
+        }
+
+    };
 
     useMemo(() => {
         const per = calPercentageChange(details.close, previousDayPrice).toFixed(2)
@@ -121,7 +165,7 @@ export default function StockChart({ selectedTicker }: { selectedTicker: Ticker 
         console.log("isloading = true:", isLoading)
 
         // Ensure all required dependencies are available
-        if (!date || !selectedTicker || !chartRef.current) {
+        if (!currentTime || !selectedTicker || !chartRef.current) {
             return;
         }
 
@@ -145,14 +189,14 @@ export default function StockChart({ selectedTicker }: { selectedTicker: Ticker 
         // Clear existing chart data
         seriesRef.current?.setData([]);
         volumeSeriesRef.current?.setData([]);
-        setDetails({ open: 0, high: 0, low: 0, close: 0, volume: 0 });
+        setDetails({ open: 0, high: 0, low: 0, close: 0, volume: 0, time: 0 });
 
         // Function to fetch historical data
         const fetchHistoricalData = async () => {
             try {
                 console.log(`Fetching historical data for ${selectedTicker}`);
                 const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_BACKEND_HOST}/livestock/historical/${selectedTicker.ticker}/${date?.toISOString()}`,
+                    `${process.env.NEXT_PUBLIC_BACKEND_HOST}/livestock/historical/${selectedTicker.ticker}/${currentTime?.toISOString()}`,
                     { signal: abortController.signal }
                 );
 
@@ -186,7 +230,7 @@ export default function StockChart({ selectedTicker }: { selectedTicker: Ticker 
         const connectToLiveStream = () => {
             console.log(`Connecting to live stream for ${selectedTicker.ticker}`);
             const eventSource = new EventSource(
-                `${process.env.NEXT_PUBLIC_BACKEND_HOST}/livestock/stream/${selectedTicker.ticker}/${date?.toISOString()}`);
+                `${process.env.NEXT_PUBLIC_BACKEND_HOST}/livestock/stream/${selectedTicker.ticker}/${currentTime?.toISOString()}`);
             eventSourceRef.current = eventSource;
 
             eventSource.onopen = () => console.log("EventSource connection opened.");
@@ -207,7 +251,7 @@ export default function StockChart({ selectedTicker }: { selectedTicker: Ticker 
                     seriesRef.current?.update(candleData);
                     volumeSeriesRef.current?.update(volumeData);
 
-                    setDetails({ ...candleData, volume: volumeData.value });
+                    setDetails({ ...candleData, time: data.timestamp, volume: volumeData.value });
                     setIsLoading(false);
                 } catch (error) {
                     console.error("Error parsing live data:", error);
@@ -220,8 +264,8 @@ export default function StockChart({ selectedTicker }: { selectedTicker: Ticker 
             };
         };
 
-        getClosestPreviousHistoricalData(selectedTicker, date).then((data) => {
-            setPreviousDayPrice(data.adjustedClose)
+        getClosestPreviousHistoricalData(selectedTicker, currentTime).then((data) => {
+            setPreviousDayPrice(data.close)
         });
         // Chain the operations: fetch historical data, then connect to live stream
         fetchHistoricalData().then(() => {
@@ -240,7 +284,7 @@ export default function StockChart({ selectedTicker }: { selectedTicker: Ticker 
             }
         };
 
-    }, [selectedTicker, date]); // Re-run this effect when ticker or date changes
+    }, [selectedTicker, userSelectedDate]); // Re-run this effect when ticker or date changes
 
     const scrollToRealTime = () => {
         chartRef.current?.timeScale().scrollToRealTime();
@@ -322,10 +366,14 @@ export default function StockChart({ selectedTicker }: { selectedTicker: Ticker 
                             <div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="amount">Quantity</Label>
-                                    <Input id="amount" type="number" placeholder="5" required/>
+                                    <Input id="amount" type="number" placeholder="5" required onChange={handleTradeQuantityChange} value={tradeQuantity} />
                                 </div>
                                 <div className="flex flex-row gap-2 pt-2">
-                                    <Button variant="outline" className="dark:border-green-500 flex-1 cursor-pointer">Buy</Button>
+                                    <Button variant="outline" className="dark:border-green-500 flex-1 cursor-pointer" onClick={handleBuyTrade}>
+                                        {
+                                            isBuyingTrade ? <LoadingCircle /> : <>Buy</>
+                                        }
+                                    </Button>
                                 </div>
                             </div>
                         </div>

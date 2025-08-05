@@ -105,18 +105,18 @@ export default function PersonalInfoCard() {
                     </CardHeader>
                     <CardContent className="flex flex-col justify-between h-full">
                         <div className="flex flex-col gap-5">
-                            <div>
-                                <Label className="text-muted-foreground text-sm">Balance</Label>
-                                <p className={clsx(
-                                    "leading-none font-semibold", // Always applied classes
-                                    "transition-colors duration-200 ease-out", // Smooth transition over 1 second
-                                    {
-                                        "text-green-500": flashColor === 'green', // Apply green when increased
-                                        "text-red-500": flashColor === 'red',   // Apply red when decreased
-                                        "text-white": flashColor === "none"    // Default color when not flashing
-                                    }
-                                )}>$ {balance.toLocaleString()}</p>
-                            </div>
+                            {/*<div>*/}
+                            {/*    <Label className="text-muted-foreground text-sm">Balance</Label>*/}
+                            {/*    <p className={clsx(*/}
+                            {/*        "leading-none font-semibold", // Always applied classes*/}
+                            {/*        "transition-colors duration-200 ease-out", // Smooth transition over 1 second*/}
+                            {/*        {*/}
+                            {/*            "text-green-500": flashColor === 'green', // Apply green when increased*/}
+                            {/*            "text-red-500": flashColor === 'red',   // Apply red when decreased*/}
+                            {/*            "text-white": flashColor === "none"    // Default color when not flashing*/}
+                            {/*        }*/}
+                            {/*    )}>$ {balance.toLocaleString()}</p>*/}
+                            {/*</div>*/}
                             <div>
                                 <Label className="text-muted-foreground text-sm">Cash</Label>
                                 {/*<p className="leading-none font-semibold">$ {cash.toLocaleString()}</p>*/}

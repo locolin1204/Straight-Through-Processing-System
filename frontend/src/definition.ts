@@ -85,3 +85,38 @@ export interface NewsTopic {
     topic: string;
     relevance_score: number;
 }
+
+
+export interface TradeRecord {
+    id: number;
+    userId: number;
+    ticker: string;
+    quantity: number;
+    tradeType: string;
+    pricePerShare: number;
+    pnl: number | null;
+    tradeTimestamp: number;
+}
+
+export interface CurrentHolding {
+    ticker: string;
+    averagePrice: number;
+    quantity: number;
+    userId: number;
+}
+
+export interface TradeRecordBody {
+    userId: number;
+    ticker: string;
+    quantity: number;
+    tradeType: string;
+    pricePerShare: number;
+    tradeTimestamp: number;
+}
+
+export interface SellTradeRequest {
+    ticker: string;
+    userId: number;
+    marketPrice: number;
+}
+
