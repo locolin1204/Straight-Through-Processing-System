@@ -16,6 +16,6 @@ public class User {
     private String name;
 
     @Column(name = "cash")
-    private Long cash;
+    private Double cash;
 }
 
