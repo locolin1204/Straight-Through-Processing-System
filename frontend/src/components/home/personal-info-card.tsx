@@ -91,6 +91,9 @@ export default function PersonalInfoCard() {
         }
     }, [cash]);
 
+
+
+
     return (
         <Card className="flex-1 ml-10 h-[50vh]" >
             {isLoading ? (

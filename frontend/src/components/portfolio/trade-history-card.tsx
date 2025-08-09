@@ -56,7 +56,10 @@ export default function TradeHistoryCard() {
                             <TableRow key={trade.id}>
                                 <TableCell>{formatDate(trade.tradeTimestamp)}</TableCell>
                                 <TableCell>{trade.ticker}</TableCell>
-                                <TableCell className="text-right">{trade.pnl}</TableCell>
+                                <TableCell className="text-right">
+                                    {trade.pnl ? <span className={ trade.pnl> 0 ? 'text-green-500' : 'text-destructive'}>$ {formatNumber(
+                                        trade.pnl)}</span> : "/"}
+                                </TableCell>
                                 <TableCell className="text-right">{capitalizeFirstLetter(trade.tradeType)}</TableCell>
                                 <TableCell className="text-right">{trade.quantity}</TableCell>
                                 <TableCell className="text-right">$ {formatNumber(trade.pricePerShare)}</TableCell>

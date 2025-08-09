@@ -69,6 +69,7 @@ public class TradeRecordService {
     public TradeRecord createTradeRecord(TradeRecord tradeRecord) {
 //        tradeRecord.setTradeTimestamp(OffsetDateTime.now());
         tradeRecord.setHoldingId(tradeRecordRepo.findMaxHoldingIdByUserId(tradeRecord.getUserId()) + 1);
+        userService.modifyCash(tradeRecord.getUserId(),-(tradeRecord.getPricePerShare()*tradeRecord.getQuantity()));
         return tradeRecordRepo.save(tradeRecord);
     }
 
@@ -88,7 +89,9 @@ public class TradeRecordService {
                         sellTrade.setHoldingId(holding.getHoldingId());
 
                         soldTrades.add(tradeRecordRepo.save(sellTrade));
-                        userService.modifyCash(sellTrade.getUserId(), sellTrade.getQuantity() * sellTrade.getPricePerShare());
+                        userService.modifyCash(sellTrade.getUserId(),
+                                               (double) (sellTrade.getQuantity() * sellTradeRequest.getMarketPrice())
+                        );
                     }
                 }
         );
