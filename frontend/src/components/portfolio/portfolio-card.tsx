@@ -11,6 +11,7 @@ import { getCurrentHoldings } from "@/app/service/portfolio-service";
 import { calMarketPrice, formatNumber } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { clsx } from "clsx";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function PortfolioCard() {
     const envUserId = Number(process.env.NEXT_PUBLIC_USER_ID)
@@ -18,7 +19,7 @@ export default function PortfolioCard() {
 
     const { userSelectedDate, currentTime } = useDateContext();
 
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [name, setName] = useState("");
     const [cash, setCash] = useState(0);
     const [totalInventory, setTotalInventory] = useState(0)
@@ -104,10 +105,6 @@ export default function PortfolioCard() {
         };
     }, [userSelectedDate, stockOwned]);
 
-    // const balance: number = useMemo(() => {
-    //     return initBalance + cash
-    // }, [cash]);
-
     return (
         <Card className="mx-10 h-full">
             <CardHeader>
@@ -121,26 +118,35 @@ export default function PortfolioCard() {
                     Check your portfolio below
                 </CardDescription>
             </CardHeader>
-            <CardContent>
-                <div className="flex flex-row gap-20">
-                    <div className="flex flex-row gap-20">
-                        <div className="w-40">
-                            <LabelNumber label="Balance" formattedNumber={`$ ${formatNumber(balance)}`}/>
+            {
+                isLoading ? (
+                        <div className="space-y-3 px-5 w-full flex-1 ">
+                            <Skeleton className="bg-muted-foreground h-8 w-3/4"/>
+                            <Skeleton className="bg-muted-foreground h-4 w-full"/>
                         </div>
-                        <div className="w-40">
-                            <LabelNumber label="Cash" formattedNumber={`$ ${formatNumber(cash)}`}/>
+                    ) :
+                    <CardContent>
+                        <div className="flex flex-row gap-20">
+                            <div className="flex flex-row gap-20">
+                                <div className="w-40">
+                                    <LabelNumber label="Balance" formattedNumber={`$ ${formatNumber(balance)}`}/>
+                                </div>
+                                <div className="w-40">
+                                    <LabelNumber label="Cash" formattedNumber={`$ ${formatNumber(cash)}`}/>
+                                </div>
+                                <div className="w-40">
+                                    <Label className="text-muted-foreground text-sm">Unrealized P&L</Label>
+                                    <p className={clsx(
+                                        "leading-none font-semibold",
+                                        unrealizedPnl > 0 ? 'text-green-500' : 'text-destructive'
+                                    )}>{`$ ${formatNumber(unrealizedPnl)}`}</p>
+                                </div>
+                            </div>
                         </div>
-                        <div className="w-40">
-                                <Label className="text-muted-foreground text-sm">Unrealized P&L</Label>
-                                <p className={clsx(
-                                    "leading-none font-semibold",
-                                    unrealizedPnl > 0 ? 'text-green-500' : 'text-destructive'
-                                )}>{`$ ${formatNumber(unrealizedPnl)}`}</p>
-                        </div>
-                    </div>
-                </div>
 
-            </CardContent>
+                    </CardContent>
+            }
+
         </Card>
     );
 }

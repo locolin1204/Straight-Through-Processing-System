@@ -80,7 +80,7 @@ export default function StockChart({ selectedTicker }: { selectedTicker: Ticker 
             console.log("BuyTrade", trade);
             const tradeRes = await createTrade(trade);
             toast.success("Trade Executed", {
-                description: `Bought $ ${tradeRes.quantity} ${tradeRes.ticker} shares at ${formatNumber(tradeRes.pricePerShare)}`,
+                description: `Bought ${tradeRes.quantity} ${tradeRes.ticker} shares at $${formatNumber(tradeRes.pricePerShare)}`,
                 // action: {
                 //     label: "Check out portfolio",
                 //     onClick: () => router.push('/portfolio'),
@@ -138,7 +138,7 @@ export default function StockChart({ selectedTicker }: { selectedTicker: Ticker 
         volumeSeriesRef.current = volumeSeries;
 
         chart.priceScale('').applyOptions({
-            scaleMargins: { top: 0.8, bottom: 0 },
+            scaleMargins: { top: 0.9, bottom: 0 },
         });
 
         const handleResize = () => {

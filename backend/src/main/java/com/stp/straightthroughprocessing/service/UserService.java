@@ -22,7 +22,7 @@ public class UserService {
     }
 
     @Transactional
-    public Long modifyCash(Long userId, Long amount){
+    public Double modifyCash(Long userId, Double amount){
         User updatedUser = this.getUserById(userId);
         updatedUser.setCash(
                 this.getUserById(userId).getCash() + amount

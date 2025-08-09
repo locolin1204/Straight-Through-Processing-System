@@ -34,7 +34,7 @@ export function DateProvider({ children }: { children: ReactNode }) {
 
     // Initialize date and time
     useEffect(() => {
-        const initialDate = new Date('2025-08-05T13:00:00.000Z');
+        const initialDate = new Date('2025-08-05T11:00:00.000Z');
         setUserSelectedDateState(initialDate);
         setCurrentTime(initialDate);
     }, []);

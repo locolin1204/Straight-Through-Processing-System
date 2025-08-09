@@ -14,6 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { createTrade } from "@/app/service/stock-service";
 import { toast } from "sonner";
 import LoadingCircle from "@/components/loading-circle";
+import { useRouter } from "next/navigation";
 
 export default function CurrentHoldingsCard() {
     const envUserId = Number(process.env.NEXT_PUBLIC_USER_ID)
@@ -25,11 +26,13 @@ export default function CurrentHoldingsCard() {
     const [stockPrices, setStockPrices] = useState<Map<String, LiveStockData>>(new Map());
     const [isSellingTrade, setIsSellingTrade] = useState(false);
 
+    const router = useRouter();
     useEffect(() => {
         (async () => {
             const data = await getCurrentHoldings(envUserId);
             setCurHoldings(data);
         })()
+
     }, [isSellingTrade]);
 
     const handleSellTradeRecord = async (e: React.FormEvent, holding: CurrentHolding) => {
@@ -49,7 +52,7 @@ export default function CurrentHoldingsCard() {
             console.log("BuyTrade", sellTradeRequest);
             const tradeRes = await sellTrade(sellTradeRequest);
             toast.success("Trade Sold", {
-                description: `Sold $ ${holding.ticker} shares at ${formatNumber(marketPrice)}`,
+                description: `Sold ${holding.ticker} shares at $${formatNumber(marketPrice)}`,
                 // action: {
                 //     label: "Check out portfolio",
                 //     onClick: () => router.push('/portfolio'),
@@ -57,6 +60,12 @@ export default function CurrentHoldingsCard() {
             })
             // console.log("Finish buy trade", tradeRes);
             setIsSellingTrade(false);
+            if (window.location.pathname === '/portfolio') {
+                window.location.reload();
+            } else {
+                // If not on the portfolio page, you might want to redirect.
+                router.push('/portfolio');
+            }
         } catch (error) {
             setIsSellingTrade(false);
             console.error("Withdrawal failed:", error);
@@ -89,7 +98,6 @@ export default function CurrentHoldingsCard() {
 
         eventSource.onerror = () => {
             console.error('SSE error occurred');
-            setIsLoading(false);
             eventSource.close();
         };
 

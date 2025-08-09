@@ -2,7 +2,7 @@ import React from 'react';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Label } from "@/components/ui/label";
 import { StockTableProps } from "@/definition";
-import { getSignFromNumber } from "@/lib/utils";
+import { formatNumber, getSignFromNumber } from "@/lib/utils";
 
 export default function StockTable(
     { stockTableProps }: {stockTableProps: StockTableProps},
@@ -27,7 +27,7 @@ export default function StockTable(
                         <TableRow key={ticker.ticker}>
                             <TableCell className="font-medium">{ticker.ticker}</TableCell>
                             <TableCell className="">$ {ticker.curPrice.toLocaleString()}</TableCell>
-                            <TableCell className="text-right">{getSignFromNumber(ticker.percentage)}{ticker.percentage.toLocaleString()} %</TableCell>
+                            <TableCell className="text-right">{getSignFromNumber(ticker.percentage)}{formatNumber(ticker.percentage)} %</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
