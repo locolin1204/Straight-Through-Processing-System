@@ -6,14 +6,18 @@ Frontend `Next.js` \
 Backend `Springboot` \
 Database `PostgreSQL`
 
+## Demo Video
+
+![Demo Video](images/demo.gif)
+
 ## 1. Home Page
 
 ![Home Page](images/home-page.png)
 
 ## 2. Stock Page
 
-![Home Page](images/stock-page.png)
+![Stock Page](images/stock-page.png)
 
 ## 3. Portfolio Page
 
-![Home Page](images/portfolio-page.png)
+![Portfolio Page](images/portfolio-page.png)
